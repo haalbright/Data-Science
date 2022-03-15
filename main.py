@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import f1_score, recall_score, accuracy_score, \
     precision_score
@@ -56,12 +57,23 @@ def multiple_regression(csv_file, target, features):
     # fitting the training data
     LR.fit(x_train, y_train)
 
+    y_train_prediction = LR.predict(x_train)
     y_prediction = LR.predict(x_test)
 
+    # Coefficients of the model
+    cdf = pd.DataFrame(LR.coef_, x.columns, columns=['Coefficients'])
+    cdf["Intercept"] = LR.intercept_
+    print(cdf)
+
     # Calculating the error that is not explained by the model
+    score = r2_score(y_train, y_train_prediction)
+    print("Training Accuracy of the model is:", score)
+    print('Training Mean Squared Error:',
+          mean_squared_error(y_test, y_prediction))
     score = r2_score(y_test, y_prediction)
-    print("Accuracy of the model is:", score)
-    print('Mean Squared Error:', mean_squared_error(y_test, y_prediction))
+    print("Testing Accuracy of the model is:", score)
+    print('Testing Mean Squared Error:',
+          mean_squared_error(y_test, y_prediction))
 
 
 print("2020 Data with Covid Cases")
@@ -69,13 +81,40 @@ print("2020 Data with Covid Cases")
 multiple_regression('sDeaths2020_count.csv', 'Total_deaths',
                     ["Age", "Race", "Gender", "Total_cases"])
 
+print("2020 Data with Covid Cases only")
+# Model with Covid Cases only
+multiple_regression('sDeaths2020_count.csv', 'Total_deaths',
+                    ["Total_cases"])
+
 print("2020 Data without Covid Cases")
-# Model without Covid cases taked into account
+# Model without Covid cases taken into account
 multiple_regression('sDeaths2020_count.csv', 'Total_deaths',
                     ["Age", "Race", "Gender"])
 
-print("2010 Data without Covid Cases")
-# Model without Covid cases taked into account
+print("2019 Data without Covid Cases")
+# Model without Covid cases taken into account
 multiple_regression('sDeaths2019_count.csv', 'Total_deaths',
                     ["Age", "Race", "Gender"])
 
+
+# based on the results, Age, Race, Gender do not add value to the model.
+# Is it overfitting???
+
+# In the last case, there might be overfitting. In training the model has
+# accuracy of 7%, while in testing the model fits with -9% accuracy, which
+# means that the modle fits worse than the horizontal line.
+
+
+# Total_cases has an effect on suicide rates, graph the trend and data
+
+def plot_line(csv_file, m, b):
+    df = pd.read_csv(csv_file)
+    plt.title("COVID Cases Vs Deaths Regression Line")
+    plt.xlabel("COVID Cases")
+    plt.ylabel("Suicides")
+    plt.plot(df["Total_cases"], m * df["Total_cases"] + b)
+    plt.scatter(df["Total_cases"], df["Total_deaths"])
+    plt.show()
+
+
+plot_line("sDeaths2020_count.csv", 0.001464, 48.354717)
