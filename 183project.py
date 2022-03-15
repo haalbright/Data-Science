@@ -19,6 +19,7 @@ sDeaths_2019=sDeaths['2019-01':'2019-12-31']
 s2020=pd.get_dummies(sDeaths_2020)
 sresample=s2020.drop("Age", axis=1).resample("M").sum()
 sresample['Avg_Age']=s2020['Age'].resample("M").mean()
+sresample.to_csv(PATH+"s2020.csv")
 
 s2019=pd.get_dummies(sDeaths_2019)
 sresample2=s2019.drop("Age", axis=1).resample("M").sum()
@@ -31,6 +32,8 @@ sresample2=sDeaths_2019["Gender"].resample("M").count() #sresample2 is a count o
 sresample.plot(style='b')
 sresample2.plot(style='g')
 plt.plot()
+plt.ylabel("Monthly Suicide Count")
+plt.xlabel("Date")
 plt.savefig(PATH+"line.png")
 plt.close()
 
