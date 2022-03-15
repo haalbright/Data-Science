@@ -20,6 +20,11 @@ s2020=pd.get_dummies(sDeaths_2020)
 sresample=s2020.drop("Age", axis=1).resample("M").sum()
 sresample['Avg_Age']=s2020['Age'].resample("M").mean()
 
+s2019=pd.get_dummies(sDeaths_2019)
+sresample2=s2019.drop("Age", axis=1).resample("M").sum()
+sresample2['Avg_Age']=s2019['Age'].resample("M").mean()
+sresample2.to_csv(PATH+"s2019.csv")
+
 #line graph of monthly suicide coutns. Blue=during covid Green=before covid
 sresample=sDeaths_2020["Gender"].resample("M").count() #sresample is a count of suicides per month in 2020
 sresample2=sDeaths_2019["Gender"].resample("M").count() #sresample2 is a count of suicides per month in 2019
